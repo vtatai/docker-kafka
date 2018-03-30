@@ -12,7 +12,7 @@ RUN apt-get update && \
     apt-get install -y zookeeper wget supervisor dnsutils && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean && \
-    wget -q http://apache.mirrors.spacedump.net/kafka/"$KAFKA_VERSION"/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
+    wget -q https://archive.apache.org/dist/kafka/"$KAFKA_VERSION"/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -O /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz && \
     tar xfz /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz -C /opt && \
     rm /tmp/kafka_"$SCALA_VERSION"-"$KAFKA_VERSION".tgz
 
@@ -25,3 +25,6 @@ ADD supervisor/kafka.conf supervisor/zookeeper.conf /etc/supervisor/conf.d/
 EXPOSE 2181 9092
 
 CMD ["supervisord", "-n"]
+
+HEALTHCHECK --interval=1m --timeout=10s \
+  CMD "$KAFKA_HOME"/bin/kafka-topics.sh --zookeeper 127.0.0.1:2181 --list > /dev/null
